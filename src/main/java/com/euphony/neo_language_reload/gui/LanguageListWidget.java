@@ -5,11 +5,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
-import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.LanguageSelectScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -23,7 +21,6 @@ public class LanguageListWidget extends ObjectSelectionList<LanguageEntry> {
         this.title = title;
         this.screen = screen;
 
-        setRenderHeader(true, (int) (9f * 1.5f));
         centerListVertically = false;
     }
 
@@ -32,7 +29,7 @@ public class LanguageListWidget extends ObjectSelectionList<LanguageEntry> {
         var headerText = title.copy().withStyle(ChatFormatting.UNDERLINE, ChatFormatting.BOLD);
         int headerPosX = x + width / 2 - minecraft.font.width(headerText) / 2;
         int headerPosY = Math.min(this.getY() + 3, y);
-        context.drawString(minecraft.font, headerText, headerPosX, headerPosY, 0xFFFFFF, false);
+        context.drawString(minecraft.font, headerText, headerPosX, headerPosY, -1, true);
     }
 
     @Override
@@ -61,6 +58,7 @@ public class LanguageListWidget extends ObjectSelectionList<LanguageEntry> {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+    /*
     // Remove focusing on entry click
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -80,21 +78,36 @@ public class LanguageListWidget extends ObjectSelectionList<LanguageEntry> {
         return this.scrolling;
     }
 
+     */
+
     @Override
     @Nullable
     public LanguageEntry getEntryAtPosition(double x, double y) {
-        int halfRowWidth = this.getRowWidth() / 2;
-        int center = this.getX() + width / 2;
-        int minX = center - halfRowWidth;
-        int maxX = center + halfRowWidth;
-        int m = Mth.floor(y - this.getY()) - headerHeight + (int) this.getScrollAmount() - 4 + 2;
-        int entryIndex = m / itemHeight;
-        var hasScrollbar = this.scrollbarVisible();
-        var scrollbarX = this.getScrollbarPosition();
-        var entryCount = this.getItemCount();
-        return x >= minX && x <= maxX && (!hasScrollbar || x < scrollbarX) && entryIndex >= 0 && m >= 0 && entryIndex < entryCount
-                ? this.children().get(entryIndex)
-                : null;
+        var entry = super.getEntryAtPosition(x, y);
+        return entry != null && this.scrollbarVisible() && x >= this.scrollBarX()
+                ? null
+                : entry;
+    }
+
+
+    @Override
+    protected void renderSelection(GuiGraphics context, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) {
+        if (this.scrollbarVisible()) {
+            var x1 = this.getRowLeft() - 2;
+            var x2 = this.scrollBarX();
+            var y1 = y - 2;
+            var y2 = y + entryHeight + 2;
+            context.fill(x1, y1, x2, y2, borderColor);
+            context.fill(x1 + 1, y1 + 1, x2 - 1, y2 - 1, fillColor);
+        } else {
+            super.renderSelection(context, y, entryWidth, entryHeight, borderColor, fillColor);
+        }
+    }
+
+    public int getHoveredSelectionRight() {
+        return this.scrollbarVisible()
+                ? this.scrollBarX()
+                : this.getRowRight() - 2;
     }
 
     public LanguageSelectScreen getScreen() {
@@ -111,11 +124,7 @@ public class LanguageListWidget extends ObjectSelectionList<LanguageEntry> {
     }
 
     @Override
-    protected int getScrollbarPosition() {
+    public int scrollBarX() {
         return this.getRight() - 6;
-    }
-
-    public void updateScroll() {
-        this.setScrollAmount(this.getScrollAmount());
     }
 }

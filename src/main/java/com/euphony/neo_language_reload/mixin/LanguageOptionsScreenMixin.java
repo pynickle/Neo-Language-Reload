@@ -92,8 +92,8 @@ public abstract class LanguageOptionsScreenMixin extends OptionsSubScreen implem
         selectedLanguageList.updateSize(listWidth, layout);
         availableLanguageList.setX(width / 2 - 4 - listWidth);
         selectedLanguageList.setX(width / 2 + 4);
-        availableLanguageList.updateScroll();
-        selectedLanguageList.updateScroll();
+        availableLanguageList.refreshScrollAmount();
+        selectedLanguageList.refreshScrollAmount();
 
         ci.cancel();
     }
@@ -140,7 +140,7 @@ public abstract class LanguageOptionsScreenMixin extends OptionsSubScreen implem
                 list.setSelected(entry);
             }
         });
-        list.updateScroll();
+        list.refreshScrollAmount();
     }
 
     @Override

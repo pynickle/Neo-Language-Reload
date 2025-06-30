@@ -6,6 +6,7 @@ import com.euphony.neo_language_reload.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.resources.language.LanguageInfo;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -127,10 +128,10 @@ public class LanguageEntry extends ObjectSelectionList.Entry<LanguageEntry> {
                 button.render(context, mouseX, mouseY, tickDelta);
             }, x, y);
             if ((hovered || isFocused()) && isDefault())
-                renderDefaultLanguageTooltip(x, y);
+                renderDefaultLanguageTooltip(context, x, y);
         }
-        context.drawString(client.font, language.name(), x + 29, y + 3, 0xFFFFFF);
-        context.drawString(client.font, language.region(), x + 29, y + 14, 0x808080);
+        context.drawString(client.font, language.name(), x + 29, y + 3, -1);
+        context.drawString(client.font, language.region(), x + 29, y + 14, -8355712);
     }
 
     private void renderButtons(ButtonRenderer renderer, int x, int y) {
@@ -141,16 +142,17 @@ public class LanguageEntry extends ObjectSelectionList.Entry<LanguageEntry> {
         } else renderer.render(addButton, x + 7, y);
     }
 
-    private void renderDefaultLanguageTooltip(int x, int y) {
+    private void renderDefaultLanguageTooltip(GuiGraphics context, int x, int y) {
         var tooltip = client.font.split(DEFAULT_LANGUAGE_TOOLTIP, parentList.getRowWidth() - 6);
-        parentList.getScreen().setTooltipForNextRenderPass(tooltip, (screenWidth, screenHeight, mouseX, mouseY, width, height) -> {
+        ClientTooltipPositioner positioner = (screenWidth, screenHeight, mouseX, mouseY, width, height) -> {
             var pos = new Vector2i(
                     x + 3 + (parentList.getRowWidth() - width - 6) / 2,
                     y + parentList.getRowHeight() + 4);
             if (pos.y > parentList.getBottom() + 2 || pos.y + height + 5 > screenHeight)
                 pos.y = y - height - 6;
             return pos;
-        }, true);
+        };
+        context.setTooltipForNextFrame(client.font, tooltip, positioner, 0, 0, true);
     }
 
     @Override

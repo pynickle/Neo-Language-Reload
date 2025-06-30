@@ -27,10 +27,14 @@ public abstract class KeyboardMixin {
     @Shadow @Final private Minecraft minecraft;
 
     @Shadow
-    protected abstract void debugFeedbackTranslated(String message, Object... args);
+    protected abstract void showDebugChat(Component message);
 
     @Shadow
-    protected abstract void debugWarningTranslated(String message, Object... args);
+    protected abstract void debugWarningComponent(Component message);
+    @Shadow
+    protected abstract void debugFeedbackComponent(Component message);
+    @Shadow
+    protected abstract void debugFeedbackTranslated(String message);
 
     @Unique
     private void processLanguageReloadKeys() {
@@ -41,7 +45,7 @@ public abstract class KeyboardMixin {
             var language = languageManager.getLanguage(config.previousLanguage);
             var noLanguage = config.previousLanguage.equals(NeoLanguageReload.NO_LANGUAGE);
             if (language == null && !noLanguage) {
-                debugFeedbackTranslated("debug.reload_languages.switch.failure");
+                debugWarningComponent(Component.translatable("debug.reload_languages.switch.failure"));
             } else {
                 NeoLanguageReload.setLanguage(config.previousLanguage, config.previousFallbacks);
                 var languages = new ArrayList<Component>() {{
@@ -55,7 +59,7 @@ public abstract class KeyboardMixin {
                             .map(LanguageInfo::toComponent)
                             .toList());
                 }};
-                debugWarningTranslated("debug.reload_languages.switch.success", ComponentUtils.formatList(languages, Component.literal(", ")));
+                debugFeedbackComponent(Component.translatable("debug.reload_languages.switch.success", ComponentUtils.formatList(languages, Component.literal(", "))));
             }
         } else {
             NeoLanguageReload.reloadLanguages();
@@ -64,10 +68,10 @@ public abstract class KeyboardMixin {
     }
 
     @Inject(method = "handleDebugKeys", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/components/ChatComponent;addMessage(Lnet/minecraft/network/chat/Component;)V",
+            target = "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V",
             ordinal = 6, shift = At.Shift.AFTER))
     private void onProcessF3$addHelp(int key, CallbackInfoReturnable<Boolean> cir) {
-        minecraft.gui.getChat().addMessage(Component.translatable("debug.reload_languages.help"));
+        this.showDebugChat(Component.translatable("debug.reload_languages.help"));
     }
 
     @Inject(method = "handleDebugKeys", at = @At("RETURN"), cancellable = true)
@@ -78,20 +82,19 @@ public abstract class KeyboardMixin {
         }
     }
 
-    @Inject(method = "keyPress", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screens/Screen;wrapScreenError(Ljava/lang/Runnable;Ljava/lang/String;Ljava/lang/String;)V"),
+    @Inject(method = "keyPress", at = @At(value = "FIELD",
+            target = "Lnet/minecraft/client/KeyboardHandler;debugCrashKeyTime:J"),
             cancellable = true)
     private void onOnKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
-        if (InputConstants.isKeyDown(window, GLFW.GLFW_KEY_F3) && key == GLFW.GLFW_KEY_J) {
-            if (action != 0)
+        if (minecraft.screen != null && InputConstants.isKeyDown(window, GLFW.GLFW_KEY_F3) && key == GLFW.GLFW_KEY_J) {
+            if (action != 0) {
                 processLanguageReloadKeys();
+            }
             ci.cancel();
         }
     }
 
-    @Inject(method = "charTyped", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screens/Screen;wrapScreenError(Ljava/lang/Runnable;Ljava/lang/String;Ljava/lang/String;)V",
-            ordinal = 0), cancellable = true)
+    @Inject(method = "charTyped", at = @At(value = "HEAD"), cancellable = true)
     private void onOnChar(long window, int codePoint, int modifiers, CallbackInfo ci) {
         if (InputConstants.isKeyDown(window, GLFW.GLFW_KEY_F3) && InputConstants.isKeyDown(window, GLFW.GLFW_KEY_J)) {
             ci.cancel();

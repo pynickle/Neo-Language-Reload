@@ -29,7 +29,7 @@ abstract class GameOptionsMixin {
         }
     }
 
-    @Inject(method = "Lnet/minecraft/client/Options;load(Z)V", at = @At("HEAD"))
+    @Inject(method = "load", at = @At("HEAD"))
     void onLoad(CallbackInfo ci) {
         if (!optionsFile.exists()) {
             NeoLanguageReload.shouldSetSystemLanguage = true;
@@ -38,7 +38,7 @@ abstract class GameOptionsMixin {
 
     @Inject(method = "dataFix", at = @At("RETURN"))
     void onUpdate(CompoundTag nbt, CallbackInfoReturnable<CompoundTag> cir) {
-        var lang = cir.getReturnValue().getString("lang");
+        var lang = cir.getReturnValue().getStringOr("lang", "");
         if (lang.isEmpty()) {
             NeoLanguageReload.shouldSetSystemLanguage = true;
         } else checkConfigLanguage(lang);
