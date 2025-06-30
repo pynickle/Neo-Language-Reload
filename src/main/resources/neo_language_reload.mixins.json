@@ -1,0 +1,34 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.euphony.neo_language_reload.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "KeyboardMixin",
+    "LanguageMixin",
+    "SignTextAccessor",
+    "TextDisplayEntityAccessor",
+    "TranslatableTextContentMixin"
+  ],
+  "client": [
+    "AdvancementsScreenMixin",
+    "AdvancementTabMixin",
+    "AdvancementWidgetAccessor",
+    "BookScreenAccessor",
+    "ClientChunkManagerAccessor",
+    "ClientChunkMapAccessor",
+    "GameOptionsMixin",
+    "LanguageManagerMixin",
+    "LanguageOptionsScreenMixin",
+    "LanguageSelectionListWidgetAccessor",
+    "RecipeBookWidgetMixin",
+    "SearchManagerMixin",
+    "TranslationStorageMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
