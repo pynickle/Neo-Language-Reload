@@ -8,10 +8,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.Component;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class ConfigScreen extends OptionsSubScreen {
     private static final OptionInstance<Boolean> MULTILINGUAL_SEARCH = OptionInstance.createBoolean(
             "options.languagereload.multilingualItemSearch",

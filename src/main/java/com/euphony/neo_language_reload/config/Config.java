@@ -4,8 +4,6 @@ import com.euphony.neo_language_reload.NeoLanguageReload;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.locale.Language;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLPaths;
 
 import java.nio.file.Files;
@@ -13,7 +11,6 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedList;
 
-@OnlyIn(Dist.CLIENT)
 public class Config {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path PATH = FMLPaths.CONFIGDIR.get().resolve(NeoLanguageReload.MOD_ID + ".json");
