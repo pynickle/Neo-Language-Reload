@@ -117,30 +117,15 @@ public abstract class LanguageOptionsScreenMixin extends OptionsSubScreen implem
 
     @Unique
     private void refresh() {
-        refreshList(selectedLanguageList, selectedLanguages.stream().map(languageEntries::get).filter(Objects::nonNull));
-        refreshList(availableLanguageList, languageEntries.values().stream()
-                .filter(entry -> {
-                    if (selectedLanguageList.children().contains(entry)) return false;
-                    var query = searchBox.getValue().toLowerCase(Locale.ROOT);
-                    var langCode = entry.getCode().toLowerCase(Locale.ROOT);
-                    var langName = entry.getLanguage().toComponent().getString().toLowerCase(Locale.ROOT);
-                    return langCode.contains(query) || langName.contains(query);
-                }));
-    }
-
-    @Unique
-    private void refreshList(LanguageListWidget list, Stream<? extends LanguageEntry> entries) {
-        var selectedEntry = list.getSelected();
-        list.setSelected(null);
-        list.children().clear();
-        entries.forEach(entry -> {
-            list.children().add(entry);
-            entry.setParent(list);
-            if (entry == selectedEntry) {
-                list.setSelected(entry);
-            }
-        });
-        list.refreshScrollAmount();
+        selectedLanguageList.set(selectedLanguages.stream().map(languageEntries::get).filter(Objects::nonNull));
+        availableLanguageList.set(languageEntries.values().stream()
+            .filter(entry -> {
+                if (selectedLanguageList.children().contains(entry)) return false;
+                var query = searchBox.getValue().toLowerCase(Locale.ROOT);
+                var langCode = entry.getCode().toLowerCase(Locale.ROOT);
+                var langName = entry.getLanguage().toComponent().getString().toLowerCase(Locale.ROOT);
+                return langCode.contains(query) || langName.contains(query);
+            }));
     }
 
     @Override

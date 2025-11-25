@@ -6,6 +6,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.resources.language.LanguageInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
@@ -36,9 +38,12 @@ public abstract class KeyboardMixin {
     @Shadow
     protected abstract void debugFeedbackTranslated(String message);
 
+    @Shadow
+    private boolean handledDebugKey;
+
     @Unique
-    private void processLanguageReloadKeys() {
-        if (Screen.hasShiftDown()) {
+    private void processLanguageReloadKeys(KeyEvent input) {
+        if (input.hasShiftDown()) {
             var config = Config.getInstance();
             var languageManager = minecraft.getLanguageManager();
 
@@ -70,14 +75,14 @@ public abstract class KeyboardMixin {
     @Inject(method = "handleDebugKeys", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V",
             ordinal = 6, shift = At.Shift.AFTER))
-    private void onProcessF3$addHelp(int key, CallbackInfoReturnable<Boolean> cir) {
+    private void onProcessF3$addHelp(KeyEvent keyInput, CallbackInfoReturnable<Boolean> cir) {
         this.showDebugChat(Component.translatable("debug.reload_languages.help"));
     }
 
     @Inject(method = "handleDebugKeys", at = @At("RETURN"), cancellable = true)
-    private void onProcessF3(int key, CallbackInfoReturnable<Boolean> cir) {
-        if (key == GLFW.GLFW_KEY_J) {
-            processLanguageReloadKeys();
+    private void onProcessF3(KeyEvent keyInput, CallbackInfoReturnable<Boolean> cir) {
+        if (keyInput.key() == GLFW.GLFW_KEY_J) {
+            processLanguageReloadKeys(keyInput);
             cir.setReturnValue(true);
         }
     }
@@ -85,18 +90,22 @@ public abstract class KeyboardMixin {
     @Inject(method = "keyPress", at = @At(value = "FIELD",
             target = "Lnet/minecraft/client/KeyboardHandler;debugCrashKeyTime:J"),
             cancellable = true)
-    private void onOnKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
-        if (minecraft.screen != null && InputConstants.isKeyDown(window, GLFW.GLFW_KEY_F3) && key == GLFW.GLFW_KEY_J) {
-            if (action != 0) {
-                processLanguageReloadKeys();
+    private void onOnKey(long window, int action, KeyEvent input, CallbackInfo ci) {
+        var clientWindow = minecraft.getWindow();
+        if (minecraft.screen != null && InputConstants.isKeyDown(clientWindow, GLFW.GLFW_KEY_F3) && input.key() == GLFW.GLFW_KEY_J) {
+            this.handledDebugKey = true;
+            if (action != InputConstants.PRESS) {
+                processLanguageReloadKeys(input);
             }
             ci.cancel();
         }
     }
 
     @Inject(method = "charTyped", at = @At(value = "HEAD"), cancellable = true)
-    private void onOnChar(long window, int codePoint, int modifiers, CallbackInfo ci) {
-        if (InputConstants.isKeyDown(window, GLFW.GLFW_KEY_F3) && InputConstants.isKeyDown(window, GLFW.GLFW_KEY_J)) {
+    private void onOnChar(long window, CharacterEvent event, CallbackInfo ci) {
+        var clientWindow = minecraft.getWindow();
+
+        if (InputConstants.isKeyDown(clientWindow, GLFW.GLFW_KEY_F3) && InputConstants.isKeyDown(clientWindow, GLFW.GLFW_KEY_J)) {
             ci.cancel();
         }
     }
