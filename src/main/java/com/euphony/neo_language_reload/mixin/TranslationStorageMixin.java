@@ -1,10 +1,14 @@
 package com.euphony.neo_language_reload.mixin;
 
+import com.euphony.neo_language_reload.NeoLanguageReload;
 import com.euphony.neo_language_reload.access.ITranslationStorage;
 import com.euphony.neo_language_reload.config.Config;
 import com.google.common.collect.Maps;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.resources.language.ClientLanguage;
+import net.minecraft.locale.DeprecatedTranslationsInfo;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -31,10 +35,19 @@ abstract class TranslationStorageMixin extends Language implements ITranslationS
     @Unique private static Map<String, Map<String, String>> separateTranslationsOnLoad;
     @Unique private Map<String, Map<String, String>> separateTranslations;
 
-    @Inject(method = "<init>", at = @At("RETURN"))
-    void onConstructed(Map<String, String> translations, boolean rightToLeft, CallbackInfo ci) {
+    @Inject(method = "<init>*", at = @At("RETURN"))
+    void onConstructed(Map<String, String> translations, boolean rightToLeft, Map<String, Component> componentStorage, CallbackInfo ci) {
         separateTranslations = separateTranslationsOnLoad;
         separateTranslationsOnLoad = null;
+    }
+
+    @WrapOperation(method = "loadFrom(Lnet/minecraft/server/packs/resources/ResourceManager;Ljava/util/List;Z)Lnet/minecraft/client/resources/language/ClientLanguage;",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/locale/DeprecatedTranslationsInfo;applyToMap(Ljava/util/Map;)V"))
+    private static void onLoad$applyDeprecatedLanguageData(DeprecatedTranslationsInfo instance, Map<String, String> stringStringMap, Operation<Void> original) {
+        original.call(instance, stringStringMap);
+        for (Map<String, String> map : separateTranslationsOnLoad.values()) {
+            original.call(instance, map);
+        }
     }
 
     @Inject(method = "loadFrom",
