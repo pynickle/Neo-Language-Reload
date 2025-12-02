@@ -24,7 +24,9 @@ import java.util.Objects;
 
 @Mixin(KeyboardHandler.class)
 public abstract class KeyboardMixin {
-    @Shadow @Final private Minecraft minecraft;
+    @Shadow
+    @Final
+    private Minecraft minecraft;
 
     @Shadow
     protected abstract void debugFeedbackTranslated(String message, Object... args);

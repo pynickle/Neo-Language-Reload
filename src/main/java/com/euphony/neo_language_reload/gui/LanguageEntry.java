@@ -137,7 +137,8 @@ public class LanguageEntry extends ObjectSelectionList.Entry<LanguageEntry> {
         if (isSelected()) {
             if (!isDefault() || Config.getInstance().removableDefaultLanguage) renderer.render(removeButton, x, y);
             if (!isFirst()) renderer.render(moveUpButton, x + removeButton.getWidth() + 1, y);
-            if (!isLast()) renderer.render(moveDownButton, x + removeButton.getWidth() + 1, y + moveUpButton.getHeight() + 2);
+            if (!isLast())
+                renderer.render(moveDownButton, x + removeButton.getWidth() + 1, y + moveUpButton.getHeight() + 2);
         } else renderer.render(addButton, x + 7, y);
     }
 

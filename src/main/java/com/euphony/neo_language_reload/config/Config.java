@@ -29,7 +29,8 @@ public class Config {
     public String language = "";
     public String previousLanguage = "";
 
-    private Config() {}
+    private Config() {
+    }
 
     public static void load() {
         if (Files.notExists(PATH)) {

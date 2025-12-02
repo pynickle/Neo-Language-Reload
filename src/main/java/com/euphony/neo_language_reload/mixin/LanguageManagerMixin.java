@@ -20,9 +20,11 @@ import java.util.*;
 
 @Mixin(LanguageManager.class)
 abstract class LanguageManagerMixin {
-    @Shadow private Map<String, LanguageInfo> languages;
+    @Shadow
+    private Map<String, LanguageInfo> languages;
 
-    @Shadow public abstract LanguageInfo getLanguage(String code);
+    @Shadow
+    public abstract LanguageInfo getLanguage(String code);
 
     @Redirect(method = "onResourceManagerReload", at = @At(value = "INVOKE", ordinal = 0, remap = false,
             target = "Ljava/util/List;add(Ljava/lang/Object;)Z"))

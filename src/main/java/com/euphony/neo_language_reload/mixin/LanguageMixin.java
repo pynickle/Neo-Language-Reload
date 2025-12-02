@@ -13,8 +13,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 // Fixes Server Translation API incompatibility (#56)
 @Mixin(value = Language.class, priority = 990)
 public class LanguageMixin implements ILanguage {
-    @Unique private @Nullable ClientLanguage translationStorage = null;
-    @Unique private static @Nullable ClientLanguage translationStorageOnSetInstance = null;
+    @Unique
+    private @Nullable ClientLanguage translationStorage = null;
+    @Unique
+    private static @Nullable ClientLanguage translationStorageOnSetInstance = null;
 
 
     @Inject(method = "inject", at = @At("HEAD"))

@@ -27,13 +27,19 @@ import java.util.stream.Stream;
 
 @Mixin(LanguageSelectScreen.class)
 public abstract class LanguageOptionsScreenMixin extends OptionsSubScreen implements ILanguageOptionsScreen {
-    @Unique private LanguageListWidget availableLanguageList;
-    @Unique private LanguageListWidget selectedLanguageList;
-    @Unique private EditBox searchBox;
-    @Unique private final LinkedList<String> selectedLanguages = new LinkedList<>();
-    @Unique private final Map<String, LanguageEntry> languageEntries = new LinkedHashMap<>();
+    @Unique
+    private LanguageListWidget availableLanguageList;
+    @Unique
+    private LanguageListWidget selectedLanguageList;
+    @Unique
+    private EditBox searchBox;
+    @Unique
+    private final LinkedList<String> selectedLanguages = new LinkedList<>();
+    @Unique
+    private final Map<String, LanguageEntry> languageEntries = new LinkedHashMap<>();
 
-    @Shadow private LanguageSelectScreen.LanguageSelectionList languageSelectionList;
+    @Shadow
+    private LanguageSelectScreen.LanguageSelectionList languageSelectionList;
 
     @Inject(method = "<init>", at = @At("TAIL"))
     void onConstructed(Screen lastScreen, Options options, LanguageManager languageManager, CallbackInfo ci) {

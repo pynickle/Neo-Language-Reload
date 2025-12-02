@@ -16,7 +16,9 @@ import java.util.Map;
 
 @Mixin(AdvancementsScreen.class)
 public abstract class AdvancementsScreenMixin extends Screen implements ClientAdvancements.Listener, IAdvancementsScreen {
-    @Shadow @Final private Map<AdvancementHolder, AdvancementTab> tabs;
+    @Shadow
+    @Final
+    private Map<AdvancementHolder, AdvancementTab> tabs;
 
     protected AdvancementsScreenMixin(Component title) {
         super(title);

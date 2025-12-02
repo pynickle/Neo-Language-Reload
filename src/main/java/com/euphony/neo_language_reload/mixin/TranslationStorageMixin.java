@@ -25,14 +25,18 @@ import java.util.function.BiConsumer;
 
 @Mixin(ClientLanguage.class)
 abstract class TranslationStorageMixin extends Language implements ITranslationStorage {
-    @Shadow public abstract String getOrDefault(String key, String defaultValue);
+    @Shadow
+    public abstract String getOrDefault(String key, String defaultValue);
 
-    @Unique private final Map<Long, String> targetLanguageByThread = Maps.newConcurrentMap();
-    @Unique private static Map<String, Map<String, String>> separateTranslationsOnLoad;
-    @Unique private Map<String, Map<String, String>> separateTranslations;
+    @Unique
+    private final Map<Long, String> targetLanguageByThread = Maps.newConcurrentMap();
+    @Unique
+    private static Map<String, Map<String, String>> separateTranslationsOnLoad;
+    @Unique
+    private Map<String, Map<String, String>> separateTranslations;
 
-    @Inject(method = "<init>", at = @At("RETURN"))
-    void onConstructed(Map<String, String> translations, boolean rightToLeft, CallbackInfo ci) {
+    @Inject(method = "<init>*", at = @At("RETURN"))
+    void onConstructed(Map<String, String> translations, boolean rightToLeft, Map<String, Component> componentStorage, CallbackInfo ci) {
         separateTranslations = separateTranslationsOnLoad;
         separateTranslationsOnLoad = null;
     }

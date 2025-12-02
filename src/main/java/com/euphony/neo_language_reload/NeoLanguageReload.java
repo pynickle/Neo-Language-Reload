@@ -49,7 +49,7 @@ public class NeoLanguageReload {
         if (client.level != null) {
             // Update signs
             var chunkManager = (ClientChunkManagerAccessor) client.level.getChunkSource();
-            var chunks = ((ClientChunkMapAccessor)(Object) chunkManager.languagereload_getChunks()).languagereload_getChunks();
+            var chunks = ((ClientChunkMapAccessor) (Object) chunkManager.languagereload_getChunks()).languagereload_getChunks();
             for (int i = 0; i < chunks.length(); i++) {
                 var chunk = chunks.get(i);
                 if (chunk == null) continue;

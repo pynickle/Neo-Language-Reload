@@ -22,7 +22,9 @@ import java.util.function.Consumer;
 
 @Mixin(TranslatableContents.class)
 abstract class TranslatableTextContentMixin implements ComponentContents {
-    @Shadow @Final private String key;
+    @Shadow
+    @Final
+    private String key;
 
     @WrapOperation(method = "visit(Lnet/minecraft/network/chat/FormattedText$ContentConsumer;)Ljava/util/Optional;",
             at = @At(value = "FIELD", target = "Lnet/minecraft/network/chat/contents/TranslatableContents;decomposedParts:Ljava/util/List;"))
@@ -63,5 +65,6 @@ abstract class TranslatableTextContentMixin implements ComponentContents {
         }
     }
 
-    @Shadow protected abstract void decomposeTemplate(String translation, Consumer<FormattedText> partsConsumer);
+    @Shadow
+    protected abstract void decomposeTemplate(String translation, Consumer<FormattedText> partsConsumer);
 }
