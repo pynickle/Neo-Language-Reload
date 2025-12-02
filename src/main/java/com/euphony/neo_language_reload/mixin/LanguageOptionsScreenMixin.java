@@ -2,7 +2,6 @@ package com.euphony.neo_language_reload.mixin;
 
 import com.euphony.neo_language_reload.NeoLanguageReload;
 import com.euphony.neo_language_reload.access.ILanguageOptionsScreen;
-import com.euphony.neo_language_reload.config.Config;
 import com.euphony.neo_language_reload.gui.LanguageEntry;
 import com.euphony.neo_language_reload.gui.LanguageListWidget;
 import net.minecraft.client.Options;
@@ -14,6 +13,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.LanguageSelectScreen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.resources.language.LanguageManager;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,26 +23,34 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 @Mixin(LanguageSelectScreen.class)
 public abstract class LanguageOptionsScreenMixin extends OptionsSubScreen implements ILanguageOptionsScreen {
-    @Unique private LanguageListWidget availableLanguageList;
-    @Unique private LanguageListWidget selectedLanguageList;
-    @Unique private EditBox searchBox;
-    @Unique private final LinkedList<String> selectedLanguages = new LinkedList<>();
-    @Unique private final Map<String, LanguageEntry> languageEntries = new LinkedHashMap<>();
+    @Unique
+    private LanguageListWidget availableLanguageList;
+    @Unique
+    private LanguageListWidget selectedLanguageList;
+    @Unique
+    private EditBox searchBox;
+    @Unique
+    private final LinkedList<String> selectedLanguages = new LinkedList<>();
+    @Unique
+    private final Map<String, LanguageEntry> languageEntries = new LinkedHashMap<>();
 
-    @Shadow private LanguageSelectScreen.LanguageSelectionList languageSelectionList;
+    @Shadow
+    private LanguageSelectScreen.LanguageSelectionList languageSelectionList;
 
     @Inject(method = "<init>", at = @At("TAIL"))
     void onConstructed(Screen lastScreen, Options options, LanguageManager languageManager, CallbackInfo ci) {
-        var currentLangCode = languageManager.getSelected();
-        if (!currentLangCode.equals(NeoLanguageReload.NO_LANGUAGE))
-            selectedLanguages.add(currentLangCode);
-        selectedLanguages.addAll(Config.getInstance().fallbacks);
-        languageManager.getLanguages().forEach((code, language) ->
-                languageEntries.put(code, new LanguageEntry(this::refresh, code, language, selectedLanguages)));
+        selectedLanguages.addAll(NeoLanguageReload.getLanguages());
+
+        var languages = languageManager.getLanguages();
+        if (languages.isEmpty()) {
+            var defaultLanguage = LanguageManagerAccessor.languagereload_getEnglishUs();
+            languageEntries.put(Language.DEFAULT, new LanguageEntry(this::refresh, Language.DEFAULT, defaultLanguage, selectedLanguages));
+        } else {
+            languages.forEach((code, language) -> languageEntries.put(code, new LanguageEntry(this::refresh, code, language, selectedLanguages)));
+        }
 
         layout.setHeaderHeight(48);
         layout.setFooterHeight(53);
@@ -105,7 +113,7 @@ public abstract class LanguageOptionsScreenMixin extends OptionsSubScreen implem
 
         var language = selectedLanguages.peekFirst();
         if (language == null) {
-            NeoLanguageReload.setLanguage(NeoLanguageReload.NO_LANGUAGE, new LinkedList<>());
+            NeoLanguageReload.setLanguage(null);
         } else {
             var fallbacks = new LinkedList<>(selectedLanguages);
             fallbacks.removeFirst();
@@ -119,13 +127,13 @@ public abstract class LanguageOptionsScreenMixin extends OptionsSubScreen implem
     private void refresh() {
         selectedLanguageList.set(selectedLanguages.stream().map(languageEntries::get).filter(Objects::nonNull));
         availableLanguageList.set(languageEntries.values().stream()
-            .filter(entry -> {
-                if (selectedLanguageList.children().contains(entry)) return false;
-                var query = searchBox.getValue().toLowerCase(Locale.ROOT);
-                var langCode = entry.getCode().toLowerCase(Locale.ROOT);
-                var langName = entry.getLanguage().toComponent().getString().toLowerCase(Locale.ROOT);
-                return langCode.contains(query) || langName.contains(query);
-            }));
+                .filter(entry -> {
+                    if (selectedLanguageList.children().contains(entry)) return false;
+                    var query = searchBox.getValue().toLowerCase(Locale.ROOT);
+                    var langCode = entry.getCode().toLowerCase(Locale.ROOT);
+                    var langName = entry.getLanguage().toComponent().getString().toLowerCase(Locale.ROOT);
+                    return langCode.contains(query) || langName.contains(query);
+                }));
     }
 
     @Override

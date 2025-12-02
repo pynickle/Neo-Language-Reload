@@ -5,8 +5,9 @@ import com.euphony.neo_language_reload.access.ILanguageOptionsScreen;
 import com.euphony.neo_language_reload.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.*;
-import net.minecraft.client.gui.screens.multiplayer.ServerSelectionList;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -140,7 +141,8 @@ public class LanguageEntry extends LanguageListWidget.Entry {
         if (isSelected()) {
             if (!isDefault() || Config.getInstance().removableDefaultLanguage) renderer.render(removeButton, x, y);
             if (!isFirst()) renderer.render(moveUpButton, x + removeButton.getWidth() + 1, y);
-            if (!isLast()) renderer.render(moveDownButton, x + removeButton.getWidth() + 1, y + moveUpButton.getHeight() + 2);
+            if (!isLast())
+                renderer.render(moveDownButton, x + removeButton.getWidth() + 1, y + moveUpButton.getHeight() + 2);
         } else renderer.render(addButton, x + 7, y);
     }
 

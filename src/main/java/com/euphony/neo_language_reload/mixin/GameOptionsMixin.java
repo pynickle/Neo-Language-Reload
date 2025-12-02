@@ -19,8 +19,11 @@ import java.io.File;
 
 @Mixin(Options.class)
 abstract class GameOptionsMixin {
-    @Shadow @Final private File optionsFile;
-    @Shadow public String languageCode;
+    @Shadow
+    @Final
+    private File optionsFile;
+    @Shadow
+    public String languageCode;
 
     @Inject(method = "<init>", at = @At("TAIL"))
     void onConstructed(Minecraft minecraft, File gameDirectory, CallbackInfo ci) {

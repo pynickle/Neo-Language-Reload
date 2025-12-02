@@ -5,10 +5,10 @@ import com.euphony.neo_language_reload.config.Config;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.resources.language.LanguageInfo;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import org.lwjgl.glfw.GLFW;
@@ -26,15 +26,19 @@ import java.util.Objects;
 
 @Mixin(KeyboardHandler.class)
 public abstract class KeyboardMixin {
-    @Shadow @Final private Minecraft minecraft;
+    @Shadow
+    @Final
+    private Minecraft minecraft;
 
     @Shadow
     protected abstract void showDebugChat(Component message);
 
     @Shadow
     protected abstract void debugWarningComponent(Component message);
+
     @Shadow
     protected abstract void debugFeedbackComponent(Component message);
+
     @Shadow
     protected abstract void debugFeedbackTranslated(String message);
 
@@ -48,22 +52,26 @@ public abstract class KeyboardMixin {
             var languageManager = minecraft.getLanguageManager();
 
             var language = languageManager.getLanguage(config.previousLanguage);
+            if (language == null && config.previousLanguage.equals(Language.DEFAULT)) {
+                language = LanguageManagerAccessor.languagereload_getEnglishUs();
+            }
             var noLanguage = config.previousLanguage.equals(NeoLanguageReload.NO_LANGUAGE);
             if (language == null && !noLanguage) {
                 debugWarningComponent(Component.translatable("debug.reload_languages.switch.failure"));
             } else {
                 NeoLanguageReload.setLanguage(config.previousLanguage, config.previousFallbacks);
-                var languages = new ArrayList<Component>() {{
-                    if (noLanguage)
-                        add(Component.literal("∅"));
-                    if (language != null)
-                        add(language.toComponent());
-                    addAll(config.fallbacks.stream()
-                            .map(languageManager::getLanguage)
-                            .filter(Objects::nonNull)
-                            .map(LanguageInfo::toComponent)
-                            .toList());
-                }};
+                var languages = new ArrayList<Component>();
+                if (noLanguage) {
+                    languages.add(Component.literal("∅"));
+                }
+                if (language != null) {
+                    languages.add(language.toComponent());
+                }
+                languages.addAll(config.fallbacks.stream()
+                        .map(languageManager::getLanguage)
+                        .filter(Objects::nonNull)
+                        .map(LanguageInfo::toComponent)
+                        .toList());
                 debugFeedbackComponent(Component.translatable("debug.reload_languages.switch.success", ComponentUtils.formatList(languages, Component.literal(", "))));
             }
         } else {

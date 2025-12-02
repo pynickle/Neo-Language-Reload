@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.client.resources.language.LanguageInfo;
 import net.minecraft.client.resources.language.LanguageManager;
-import net.minecraft.locale.Language;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,17 +15,29 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 @Mixin(LanguageManager.class)
 abstract class LanguageManagerMixin {
-    @Shadow private Map<String, LanguageInfo> languages;
+    @Shadow
+    private Map<String, LanguageInfo> languages;
 
-    @Shadow public abstract LanguageInfo getLanguage(String code);
+    @Shadow
+    public abstract LanguageInfo getLanguage(String code);
 
     @Redirect(method = "onResourceManagerReload", at = @At(value = "INVOKE", ordinal = 0, remap = false,
             target = "Ljava/util/List;add(Ljava/lang/Object;)Z"))
     boolean onReload$addFallbacks(List<String> list, Object enUsCode) {
+        if (Config.getInstance().language.equals(NeoLanguageReload.NO_LANGUAGE)) {
+            return true;
+        }
+
+        if (languages.isEmpty()) {
+            return list.add((String) enUsCode);
+        }
         Lists.reverse(Config.getInstance().fallbacks).stream()
                 .filter(code -> Objects.nonNull(getLanguage(code)))
                 .forEach(list::add);
@@ -36,7 +47,7 @@ abstract class LanguageManagerMixin {
     @ModifyExpressionValue(method = "onResourceManagerReload", at = @At(value = "INVOKE", remap = false,
             target = "Ljava/lang/String;equals(Ljava/lang/Object;)Z"))
     boolean onReload$ignoreNoLanguage(boolean original) {
-        return Config.getInstance().language.equals(NeoLanguageReload.NO_LANGUAGE);
+        return Config.getInstance().language.equals(NeoLanguageReload.NO_LANGUAGE) || languages.isEmpty();
     }
 
     @Inject(method = "onResourceManagerReload", at = @At(value = "INVOKE", ordinal = 0, remap = false,
@@ -66,9 +77,6 @@ abstract class LanguageManagerMixin {
     @Unique
     private static void setSystemLanguage(String lang, Locale locale) {
         NeoLanguageReload.LOGGER.info("Set language to {} (mapped from {})", lang, locale.toLanguageTag());
-        NeoLanguageReload.setLanguage(lang, new LinkedList<>() {{
-            if (!lang.equals(Language.DEFAULT))
-                add(Language.DEFAULT);
-        }});
+        NeoLanguageReload.setLanguage(lang);
     }
 }

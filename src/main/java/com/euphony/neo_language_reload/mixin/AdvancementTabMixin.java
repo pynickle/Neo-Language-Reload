@@ -13,8 +13,12 @@ import java.util.Map;
 
 @Mixin(AdvancementTab.class)
 public abstract class AdvancementTabMixin implements IAdvancementsTab {
-    @Shadow @Final private Minecraft minecraft;
-    @Shadow @Final private Map<AdvancementHolder, AdvancementWidget> widgets;
+    @Shadow
+    @Final
+    private Minecraft minecraft;
+    @Shadow
+    @Final
+    private Map<AdvancementHolder, AdvancementWidget> widgets;
 
     @Override
     public void languagereload_recreateWidgets() {

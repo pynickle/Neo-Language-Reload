@@ -8,6 +8,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.advancements.AdvancementsScreen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
+import net.minecraft.locale.Language;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.neoforged.api.distmarker.Dist;
@@ -16,6 +17,8 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.LinkedList;
@@ -49,7 +52,7 @@ public class NeoLanguageReload {
         if (client.level != null) {
             // Update signs
             var chunkManager = (ClientChunkManagerAccessor) client.level.getChunkSource();
-            var chunks = ((ClientChunkMapAccessor)(Object) chunkManager.languagereload_getChunks()).languagereload_getChunks();
+            var chunks = ((ClientChunkMapAccessor) (Object) chunkManager.languagereload_getChunks()).languagereload_getChunks();
             for (int i = 0; i < chunks.length(); i++) {
                 var chunk = chunks.get(i);
                 if (chunk == null) continue;
@@ -69,25 +72,54 @@ public class NeoLanguageReload {
         }
     }
 
-    public static void setLanguage(String language, LinkedList<String> fallbacks) {
+    public static void setLanguage(@Nullable String language) {
+        if (language == null || language.equals(NO_LANGUAGE)) {
+            setLanguage(NO_LANGUAGE, null);
+        } else if (language.equals(Language.DEFAULT)) {
+            setLanguage(Language.DEFAULT, null);
+        } else {
+            setLanguage(language, new LinkedList<>() {{
+                add(Language.DEFAULT);
+            }});
+        }
+    }
+
+    public static void setLanguage(
+            @Nullable String language,
+            @Nullable LinkedList<@NotNull String> fallbacks
+    ) {
+        var newLanguage = language == null ? NO_LANGUAGE : language;
+        var newFallbacks = fallbacks == null ? new LinkedList<String>() : fallbacks;
+
         var client = Minecraft.getInstance();
         var languageManager = client.getLanguageManager();
         var config = Config.getInstance();
 
-        var languageIsSame = languageManager.getSelected().equals(language);
-        var fallbacksAreSame = config.fallbacks.equals(fallbacks);
+        var languageIsSame = languageManager.getSelected().equals(newLanguage);
+        var fallbacksAreSame = config.fallbacks.equals(newFallbacks);
         if (languageIsSame && fallbacksAreSame) return;
 
         config.previousLanguage = languageManager.getSelected();
         config.previousFallbacks = config.fallbacks;
-        config.language = language;
-        config.fallbacks = fallbacks;
+        config.language = newLanguage;
+        config.fallbacks = newFallbacks;
         Config.save();
-        languageManager.setSelected(language);
-        client.options.languageCode = language;
+
+        languageManager.setSelected(newLanguage);
+        client.options.languageCode = newLanguage;
         client.options.save();
 
         reloadLanguages();
+    }
+
+    public static @NotNull LinkedList<@NotNull String> getLanguages() {
+        var list = new LinkedList<String>();
+        var language = Minecraft.getInstance().getLanguageManager().getSelected();
+        if (!language.equals(NeoLanguageReload.NO_LANGUAGE)) {
+            list.add(language);
+        }
+        list.addAll(Config.getInstance().fallbacks);
+        return list;
     }
 
     public NeoLanguageReload(IEventBus modEventBus, ModContainer modContainer) {
