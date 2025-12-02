@@ -1,3 +1,13 @@
+## [2.3.0](https://github.com/pynickle/Neo-Language-Reload/compare/v2.2.0...v2.3.0) (2025-12-02)
+
+### ✨ Features
+
+* sync with upstream 1.7.5 ([2b62dc3](https://github.com/pynickle/Neo-Language-Reload/commit/2b62dc317d60c2fdd10f54ac072c31f7a8d7a4ff))
+
+### 🐛 Bug Fixes
+
+* fix creative searching crashes the game ([c64fa91](https://github.com/pynickle/Neo-Language-Reload/commit/c64fa91d2aa90073a04f79207e5d927409166213))
+
 ## [2.2.0](https://github.com/pynickle/Neo-Language-Reload/compare/v2.1.0...v2.2.0) (2025-11-25)
 
 ### ✨ Features
