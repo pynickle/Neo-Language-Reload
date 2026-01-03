@@ -18,6 +18,7 @@
     "ClientChunkManagerAccessor",
     "ClientChunkMapAccessor",
     "GameOptionsMixin",
+    "KeyBindingAccessor",
     "LanguageManagerAccessor",
     "LanguageManagerMixin",
     "LanguageOptionsScreenMixin",

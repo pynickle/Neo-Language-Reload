@@ -4,7 +4,9 @@ import com.euphony.neo_language_reload.access.IAdvancementsScreen;
 import com.euphony.neo_language_reload.config.Config;
 import com.euphony.neo_language_reload.config.ConfigScreen;
 import com.euphony.neo_language_reload.mixin.*;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.advancements.AdvancementsScreen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
@@ -16,9 +18,12 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 import java.util.LinkedList;
@@ -30,7 +35,20 @@ public class NeoLanguageReload {
 
     public static final String NO_LANGUAGE = "*";
 
+    public static KeyMapping reloadLanguagesKey;
+
     public static boolean shouldSetSystemLanguage = false;
+
+    public static void onKeyEvent(RegisterKeyMappingsEvent event) {
+        reloadLanguagesKey = new KeyMapping(
+                "key.debug.reloadLanguages",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_J,
+                KeyMapping.Category.DEBUG
+        );
+
+        event.register(reloadLanguagesKey);
+    }
 
     public static void reloadLanguages() {
         var client = Minecraft.getInstance();
@@ -124,5 +142,7 @@ public class NeoLanguageReload {
 
     public NeoLanguageReload(IEventBus modEventBus, ModContainer modContainer) {
         ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, () -> (client, screen) -> new ConfigScreen(screen));
+
+        modEventBus.addListener(NeoLanguageReload::onKeyEvent);
     }
 }

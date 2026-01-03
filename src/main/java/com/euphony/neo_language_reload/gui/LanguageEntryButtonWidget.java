@@ -12,8 +12,8 @@ public class LanguageEntryButtonWidget extends ImageButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
-        super.renderWidget(context, mouseX, mouseY, deltaTicks);
+    public void renderContents(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+        super.renderContents(context, mouseX, mouseY, deltaTicks);
         if (this.isHovered()) {
             context.requestCursor(CursorTypes.POINTING_HAND);
         }

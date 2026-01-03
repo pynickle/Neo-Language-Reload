@@ -14,7 +14,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.language.LanguageInfo;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
 import org.joml.Vector2i;
 
@@ -26,17 +26,17 @@ public class LanguageEntry extends LanguageListWidget.Entry {
     private static final Component DEFAULT_LANGUAGE_TOOLTIP = Component.translatable("language.default.tooltip");
 
     private static final WidgetSprites ADD_TEXTURES = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/add"),
-            ResourceLocation.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/add_highlighted"));
+            Identifier.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/add"),
+            Identifier.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/add_highlighted"));
     private static final WidgetSprites REMOVE_TEXTURES = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/remove"),
-            ResourceLocation.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/remove_highlighted"));
+            Identifier.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/remove"),
+            Identifier.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/remove_highlighted"));
     private static final WidgetSprites MOVE_UP_TEXTURES = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/move_up"),
-            ResourceLocation.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/move_up_highlighted"));
+            Identifier.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/move_up"),
+            Identifier.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/move_up_highlighted"));
     private static final WidgetSprites MOVE_DOWN_TEXTURES = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/move_down"),
-            ResourceLocation.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/move_down_highlighted"));
+            Identifier.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/move_down"),
+            Identifier.fromNamespaceAndPath(NeoLanguageReload.MOD_ID, "language_selection/move_down_highlighted"));
 
     private final Minecraft client = Minecraft.getInstance();
 

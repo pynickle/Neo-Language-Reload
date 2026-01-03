@@ -31,19 +31,13 @@ public abstract class KeyboardMixin {
     private Minecraft minecraft;
 
     @Shadow
-    protected abstract void showDebugChat(Component message);
+    private boolean usedDebugKeyAsModifier;
 
     @Shadow
     protected abstract void debugWarningComponent(Component message);
 
     @Shadow
     protected abstract void debugFeedbackComponent(Component message);
-
-    @Shadow
-    protected abstract void debugFeedbackTranslated(String message);
-
-    @Shadow
-    private boolean handledDebugKey;
 
     @Unique
     private void processLanguageReloadKeys(KeyEvent input) {
@@ -76,20 +70,13 @@ public abstract class KeyboardMixin {
             }
         } else {
             NeoLanguageReload.reloadLanguages();
-            debugFeedbackTranslated("debug.reload_languages.message");
+            debugFeedbackComponent(Component.translatable("debug.reload_languages.message"));
         }
-    }
-
-    @Inject(method = "handleDebugKeys", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V",
-            ordinal = 6, shift = At.Shift.AFTER))
-    private void onProcessF3$addHelp(KeyEvent keyInput, CallbackInfoReturnable<Boolean> cir) {
-        this.showDebugChat(Component.translatable("debug.reload_languages.help"));
     }
 
     @Inject(method = "handleDebugKeys", at = @At("RETURN"), cancellable = true)
     private void onProcessF3(KeyEvent keyInput, CallbackInfoReturnable<Boolean> cir) {
-        if (keyInput.key() == GLFW.GLFW_KEY_J) {
+        if (NeoLanguageReload.reloadLanguagesKey.matches(keyInput)) {
             processLanguageReloadKeys(keyInput);
             cir.setReturnValue(true);
         }
@@ -99,9 +86,8 @@ public abstract class KeyboardMixin {
             target = "Lnet/minecraft/client/KeyboardHandler;debugCrashKeyTime:J"),
             cancellable = true)
     private void onOnKey(long window, int action, KeyEvent input, CallbackInfo ci) {
-        var clientWindow = minecraft.getWindow();
-        if (minecraft.screen != null && InputConstants.isKeyDown(clientWindow, GLFW.GLFW_KEY_F3) && input.key() == GLFW.GLFW_KEY_J) {
-            this.handledDebugKey = true;
+        if (minecraft.screen != null && minecraft.options.keyDebugModifier.isDown() && NeoLanguageReload.reloadLanguagesKey.matches(input)) {
+            this.usedDebugKeyAsModifier = true;
             if (action != InputConstants.PRESS) {
                 processLanguageReloadKeys(input);
             }
