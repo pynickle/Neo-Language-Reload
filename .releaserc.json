@@ -47,9 +47,9 @@
     [
       "semantic-release-minecraft",
       {
-        "game_versions": ["1.21.11"],
+        "game_versions": ["26.1"],
         "mod_loaders": "neoforge",
-        "display_name": "[NeoForge 1.21.11] ${ nextRelease.version }",
+        "display_name": "[NeoForge 26.1] ${ nextRelease.version }",
         "glob": "build/libs/neo_language_reload-${ nextRelease.version }.jar",
         "curseforge": {
           "project_id": "1297244",

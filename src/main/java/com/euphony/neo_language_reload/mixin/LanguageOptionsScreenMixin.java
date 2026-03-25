@@ -35,7 +35,8 @@ public abstract class LanguageOptionsScreenMixin extends OptionsSubScreen implem
     @Unique
     private final Map<String, LanguageEntry> languageEntries = new LinkedHashMap<>();
 
-    @Shadow @Final
+    @Shadow
+    @Final
     private static Component SEARCH_HINT;
     @Shadow
     private LanguageSelectScreen.LanguageSelectionList languageSelectionList;
