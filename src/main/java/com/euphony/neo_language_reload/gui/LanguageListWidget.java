@@ -2,7 +2,7 @@ package com.euphony.neo_language_reload.gui;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.options.LanguageSelectScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -44,28 +44,28 @@ public class LanguageListWidget extends ObjectSelectionList<LanguageListWidget.E
     @Nullable
     public Entry getEntryAtPosition(double x, double y) {
         var entry = super.getEntryAtPosition(x, y);
-        return entry != null && this.scrollbarVisible() && x >= this.scrollBarX()
+        return entry != null && this.scrollable() && x >= this.scrollBarX()
                 ? null
                 : entry;
     }
 
 
     @Override
-    protected void renderSelection(GuiGraphics context, Entry entry, int color) {
-        if (this.scrollbarVisible()) {
+    protected void extractSelection(GuiGraphicsExtractor graphics, Entry entry, int outlineColor) {
+        if (this.scrollable()) {
             var x1 = this.getX();
             var y1 = this.getY();
             var x2 = this.scrollBarX();
             var y2 = y1 + entry.getHeight();
-            context.fill(x1, y1, x2, y2, color);
-            context.fill(x1 + 1, y1 + 1, x2 - 1, y2 - 1, CommonColors.BLACK);
+            graphics.fill(x1, y1, x2, y2, outlineColor);
+            graphics.fill(x1 + 1, y1 + 1, x2 - 1, y2 - 1, CommonColors.BLACK);
         } else {
-            super.renderSelection(context, entry, color);
+            super.extractSelection(graphics, entry, outlineColor);
         }
     }
 
     public int getHoveredSelectionRight() {
-        return this.scrollbarVisible()
+        return this.scrollable()
                 ? this.scrollBarX()
                 : this.getRowRight();
     }

@@ -20,7 +20,6 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -32,8 +31,6 @@ import java.util.LinkedList;
 public class NeoLanguageReload {
     public static final String MOD_ID = "neo_language_reload";
     public static final Logger LOGGER = LogUtils.getLogger();
-
-    public static final String NO_LANGUAGE = "*";
 
     public static KeyMapping reloadLanguagesKey;
 
@@ -91,8 +88,8 @@ public class NeoLanguageReload {
     }
 
     public static void setLanguage(@Nullable String language) {
-        if (language == null || language.equals(NO_LANGUAGE)) {
-            setLanguage(NO_LANGUAGE, null);
+        if (language == null || language.equals(Config.NO_LANGUAGE)) {
+            setLanguage(Config.NO_LANGUAGE, null);
         } else if (language.equals(Language.DEFAULT)) {
             setLanguage(Language.DEFAULT, null);
         } else {
@@ -106,7 +103,7 @@ public class NeoLanguageReload {
             @Nullable String language,
             @Nullable LinkedList<@NotNull String> fallbacks
     ) {
-        var newLanguage = language == null ? NO_LANGUAGE : language;
+        var newLanguage = language == null ? Config.NO_LANGUAGE : language;
         var newFallbacks = fallbacks == null ? new LinkedList<String>() : fallbacks;
 
         var client = Minecraft.getInstance();
@@ -133,7 +130,7 @@ public class NeoLanguageReload {
     public static @NotNull LinkedList<@NotNull String> getLanguages() {
         var list = new LinkedList<String>();
         var language = Minecraft.getInstance().getLanguageManager().getSelected();
-        if (!language.equals(NeoLanguageReload.NO_LANGUAGE)) {
+        if (!language.equals(Config.NO_LANGUAGE)) {
             list.add(language);
         }
         list.addAll(Config.getInstance().fallbacks);

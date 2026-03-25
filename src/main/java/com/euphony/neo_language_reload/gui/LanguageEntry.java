@@ -4,7 +4,7 @@ import com.euphony.neo_language_reload.NeoLanguageReload;
 import com.euphony.neo_language_reload.access.ILanguageOptionsScreen;
 import com.euphony.neo_language_reload.config.Config;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -113,7 +113,7 @@ public class LanguageEntry extends LanguageListWidget.Entry {
     }
 
     @Override
-    public void renderContent(GuiGraphics context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+    public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
         var x = this.getX();
         var y = this.getY();
         if (hovered || isFocused() || client.options.touchscreen().get()) {
@@ -121,34 +121,34 @@ public class LanguageEntry extends LanguageListWidget.Entry {
             var y1 = y + 1;
             var x2 = parentList.getHoveredSelectionRight() - 1;
             var y2 = y + this.getHeight() - 1;
-            context.fill(x1, y1, x2, y2, (hovered || isFocused()) ? 0xA0909090 : 0x50909090);
+            graphics.fill(x1, y1, x2, y2, (hovered || isFocused()) ? 0xA0909090 : 0x50909090);
             buttons.forEach(button -> button.visible = false);
-            renderButtons((button, buttonX, buttonY) -> {
+            extractButtons((button, buttonX, buttonY) -> {
                 button.setX(buttonX);
                 button.setY(buttonY);
                 button.visible = true;
-                button.render(context, mouseX, mouseY, deltaTicks);
+                button.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
             }, x, y);
             if ((hovered || isFocused()) && isDefault()) {
-                renderDefaultLanguageTooltip(context, x, y);
+                extractDefaultLanguageTooltip(graphics, x, y);
             }
         }
-        context.drawString(client.font, language.name(), x + 29, y + 3, CommonColors.WHITE);
-        context.drawString(client.font, language.region(), x + 29, y + 14, CommonColors.GRAY);
+        graphics.text(client.font, language.name(), x + 29, y + 3, CommonColors.WHITE);
+        graphics.text(client.font, language.region(), x + 29, y + 14, CommonColors.GRAY);
     }
 
-    private void renderButtons(ButtonRenderer renderer, int x, int y) {
+    private void extractButtons(ButtonExtractor extractor, int x, int y) {
         if (isSelected()) {
-            if (!isDefault() || Config.getInstance().removableDefaultLanguage) renderer.render(removeButton, x, y);
-            if (!isFirst()) renderer.render(moveUpButton, x + removeButton.getWidth() + 1, y);
+            if (!isDefault() || Config.getInstance().removableDefaultLanguage) extractor.extract(removeButton, x, y);
+            if (!isFirst()) extractor.extract(moveUpButton, x + removeButton.getWidth() + 1, y);
             if (!isLast())
-                renderer.render(moveDownButton, x + removeButton.getWidth() + 1, y + moveUpButton.getHeight() + 2);
-        } else renderer.render(addButton, x + 7, y);
+                extractor.extract(moveDownButton, x + removeButton.getWidth() + 1, y + moveUpButton.getHeight() + 2);
+        } else extractor.extract(addButton, x + 7, y);
     }
 
-    private void renderDefaultLanguageTooltip(GuiGraphics context, int x, int y) {
+    private void extractDefaultLanguageTooltip(GuiGraphicsExtractor graphics, int x, int y) {
         var tooltip = client.font.split(DEFAULT_LANGUAGE_TOOLTIP, parentList.getRowWidth() - 6);
-        ClientTooltipPositioner positioner = (screenWidth, screenHeight, mouseX, mouseY, width, height) -> {
+        ClientTooltipPositioner positioner = (_, screenHeight, _, _, width, height) -> {
             var pos = new Vector2i(
                     x + 3 + (parentList.getRowWidth() - width - 6) / 2,
                     y + parentList.getRowHeight() + 4);
@@ -156,7 +156,7 @@ public class LanguageEntry extends LanguageListWidget.Entry {
                 pos.y = y - height - 6;
             return pos;
         };
-        context.setTooltipForNextFrame(client.font, tooltip, positioner, 0, 0, true);
+        graphics.setTooltipForNextFrame(client.font, tooltip, positioner, 0, 0, true);
     }
 
     @Override
@@ -209,7 +209,7 @@ public class LanguageEntry extends LanguageListWidget.Entry {
     }
 
     @FunctionalInterface
-    private interface ButtonRenderer {
-        void render(Button button, int x, int y);
+    private interface ButtonExtractor {
+        void extract(Button button, int x, int y);
     }
 }

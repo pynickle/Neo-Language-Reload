@@ -49,7 +49,7 @@ public abstract class KeyboardMixin {
             if (language == null && config.previousLanguage.equals(Language.DEFAULT)) {
                 language = LanguageManagerAccessor.languagereload_getEnglishUs();
             }
-            var noLanguage = config.previousLanguage.equals(NeoLanguageReload.NO_LANGUAGE);
+            var noLanguage = config.previousLanguage.equals(Config.NO_LANGUAGE);
             if (language == null && !noLanguage) {
                 debugWarningComponent(Component.translatable("debug.reload_languages.switch.failure"));
             } else {
