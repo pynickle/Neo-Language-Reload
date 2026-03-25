@@ -1,3 +1,14 @@
+## [3.0.1](https://github.com/pynickle/Neo-Language-Reload/compare/v3.0.0...v3.0.1) (2026-03-25)
+
+### 🔧 Miscellaneous Changes
+
+* update java version ([e55ba7e](https://github.com/pynickle/Neo-Language-Reload/commit/e55ba7e42184cb50210274f08f61e38757f7baec))
+* update release settings ([daf3dd4](https://github.com/pynickle/Neo-Language-Reload/commit/daf3dd4c701a5c9f1a5dae3cb66e1a0a210b4f93))
+
+### 🚀 Improvements
+
+* update pl_pl trans ([47edbde](https://github.com/pynickle/Neo-Language-Reload/commit/47edbde5cdbc0ca1320387c59159196cbdbd81a7))
+
 ## [3.0.0](https://github.com/pynickle/Neo-Language-Reload/compare/v2.4.0...v3.0.0) (2026-03-25)
 
 ### ⚠ BREAKING CHANGES
