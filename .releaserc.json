@@ -53,7 +53,7 @@
         "glob": "build/libs/neo_language_reload-${ nextRelease.version }.jar",
         "curseforge": {
           "project_id": "1297244",
-          "java_versions": 21,
+          "java_versions": 25,
           "environments": "client"
         },
         "modrinth": {
