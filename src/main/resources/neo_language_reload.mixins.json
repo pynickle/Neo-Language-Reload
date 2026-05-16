@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "com.euphony.neo_language_reload.mixin",
   "compatibilityLevel": "JAVA_21",
+  "plugin": "com.euphony.neo_language_reload.mixin.LanguageReloadPlugin",
   "mixins": [
     "KeyboardMixin",
     "LanguageMixin",
