@@ -1,3 +1,13 @@
+## [4.0.0](https://github.com/pynickle/Neo-Language-Reload/compare/v3.0.1...v4.0.0) (2026-06-21)
+
+### ⚠ BREAKING CHANGES
+
+* port to 26.2
+
+### ✨ Features
+
+* port to 26.2, sync with Language Reload 1.7.7 ([aad2cdd](https://github.com/pynickle/Neo-Language-Reload/commit/aad2cdd49b79c5fd195f9f5d676cd41ccc7c4473))
+
 ## [3.0.1](https://github.com/pynickle/Neo-Language-Reload/compare/v3.0.0...v3.0.1) (2026-03-25)
 
 ### 🔧 Miscellaneous Changes
