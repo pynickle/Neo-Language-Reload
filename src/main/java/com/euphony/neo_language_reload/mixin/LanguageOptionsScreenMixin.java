@@ -111,7 +111,7 @@ public abstract class LanguageOptionsScreenMixin extends OptionsSubScreen implem
     @Inject(method = "onDone", at = @At("HEAD"), cancellable = true)
     private void onDone(CallbackInfo ci) {
         if (minecraft == null) return;
-        minecraft.setScreen(lastScreen);
+        minecraft.gui.setScreen(lastScreen);
 
         var language = selectedLanguages.peekFirst();
         if (language == null) {

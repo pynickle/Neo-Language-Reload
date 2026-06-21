@@ -86,7 +86,7 @@ public abstract class KeyboardMixin {
             target = "Lnet/minecraft/client/KeyboardHandler;debugCrashKeyTime:J"),
             cancellable = true)
     private void onOnKey(long window, int action, KeyEvent input, CallbackInfo ci) {
-        if (minecraft.screen != null && minecraft.options.keyDebugModifier.isDown() && NeoLanguageReload.reloadLanguagesKey.matches(input)) {
+        if (minecraft.gui.screen() != null && minecraft.options.keyDebugModifier.isDown() && NeoLanguageReload.reloadLanguagesKey.matches(input)) {
             this.usedDebugKeyAsModifier = true;
             if (action != InputConstants.PRESS) {
                 processLanguageReloadKeys(input);
